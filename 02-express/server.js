@@ -42,7 +42,6 @@ app.get("/joke", (req, res) => {
 		return data
 	})
 
-	 console.log(JSON.parse(Jokes));
 	Jokes = JSON.parse(Jokes)
 	res.send({
 		joke: Jokes[randomNum(Jokes.length)],
