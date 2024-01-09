@@ -4,10 +4,22 @@
 
 // Require express
 const express = require("express");
+const fs = require("fs");
+
 const PORT = 3000;
 
 // Create a new Express app
 const app = express();
+
+const randomNum = (max) => {
+	const nums = Array.from({ length: max }, (_, index) => index);
+  
+	for (let i = max - 1; i > 0; i--) {
+	  const j = Math.floor(Math.random() * (i + 1));
+	  [nums[i], nums[j]] = [nums[j], nums[i]];
+	}
+	return nums[0];
+  };
 
 // Listen for incoming GET request to "/"
 app.get("/", (req, res) => {
@@ -23,8 +35,17 @@ app.get("/joke", (req, res) => {
 	// Get a random oneliner from the array of oneliners
 	// Respond with an object with the oneliner as the `joke` attribute
 
+	let Jokes = fs.readFileSync(`${__dirname}/data/oneliners.json`, 'utf8', function(err, data){
+		if (err) {
+			return;
+		}
+		return data
+	})
+
+	 console.log(JSON.parse(Jokes));
+	Jokes = JSON.parse(Jokes)
 	res.send({
-		joke: "I'm batman *shhh*",
+		joke: Jokes[randomNum(Jokes.length)],
 	});
 });
 
