@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 import {
 	ChatMessageData,
 	ClientToServerEvents,
-	ServerToClientEvents
+	ServerToClientEvents,
 } from "@shared/types/SocketTypes";
 import "./assets/scss/style.scss";
 
@@ -11,8 +11,12 @@ console.log("SOCKET_HOST:", SOCKET_HOST);
 
 // Forms
 const messageEl = document.querySelector("#message") as HTMLInputElement;
-const messageFormEl = document.querySelector("#message-form") as HTMLFormElement;
-const usernameFormEl = document.querySelector("#username-form") as HTMLFormElement;
+const messageFormEl = document.querySelector(
+	"#message-form"
+) as HTMLFormElement;
+const usernameFormEl = document.querySelector(
+	"#username-form"
+) as HTMLFormElement;
 const usernameInputEl = document.querySelector("#username") as HTMLInputElement;
 
 // Lists
@@ -26,16 +30,17 @@ const startView = document.querySelector("#start") as HTMLDivElement;
 let username: string | null = null;
 
 // Connect to Socket.IO Server
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOST);
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
+	io(SOCKET_HOST);
 
 // Add message to the chat
 const addMessageToChat = (msg: ChatMessageData, ownMessage = false) => {
 	const now = new Date();
-	const hour = now.getHours().toString().padStart(2, '0');
-	const minute = now.getMinutes().toString().padStart(2, '0'); 
-	
+	const hour = now.getHours().toString().padStart(2, "0");
+	const minute = now.getMinutes().toString().padStart(2, "0");
+
 	const digitalTime = `${hour}:${minute}`;
-	
+
 	// Create a new LI element
 	const msgEl = document.createElement("li");
 
@@ -45,28 +50,33 @@ const addMessageToChat = (msg: ChatMessageData, ownMessage = false) => {
 	// If the message is from the user, add the class "own-message"
 	if (ownMessage) {
 		msgEl.classList.add("own-message");
+		msgEl.innerHTML = `
+
+		<span class="content">${msg.content}</span>
+		<span class="time">${digitalTime}</span>
+		 `;
+	} else {
+		msgEl.innerHTML = `
+		<span class="user">${msg.username}</span>
+		<span class="content">${msg.content}</span>
+		<span class="time">${digitalTime}</span>
+		 `;
 	}
-
-	// Set content of the LI element to the message
-	msgEl.innerHTML = `<span class="content">${msg.content}</span>
-					   <span class="time">${digitalTime}</span>
-						`;
-
 	// Append the LI element to the messages element
 	messagesEl.appendChild(msgEl);
-}
+};
 
 // Show chat view
 const showChatView = () => {
 	startView.classList.add("hide");
 	chatView.classList.remove("hide");
-}
+};
 
 // Show welcome/"start" view
 const showWelcomeView = () => {
 	chatView.classList.add("hide");
 	startView.classList.remove("hide");
-}
+};
 
 // Listen for when connection is established
 socket.on("connect", () => {
@@ -130,7 +140,8 @@ messageFormEl.addEventListener("submit", (e) => {
 	// Construct message payload
 	const msg: ChatMessageData = {
 		content: trimmedMessage,
-	}
+		username,
+	};
 
 	// Send (emit) the message to the server
 	socket.emit("sendChatMessage", msg);
