@@ -30,6 +30,12 @@ const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SOCKET_HOS
 
 // Add message to the chat
 const addMessageToChat = (msg: ChatMessageData, ownMessage = false) => {
+	const now = new Date();
+	const hour = now.getHours().toString().padStart(2, '0');
+	const minute = now.getMinutes().toString().padStart(2, '0'); 
+	
+	const digitalTime = `${hour}:${minute}`;
+	
 	// Create a new LI element
 	const msgEl = document.createElement("li");
 
@@ -42,7 +48,9 @@ const addMessageToChat = (msg: ChatMessageData, ownMessage = false) => {
 	}
 
 	// Set content of the LI element to the message
-	msgEl.innerHTML = `<span class="content">${msg.content}</span>`;
+	msgEl.innerHTML = `<span class="content">${msg.content}</span>
+					   <span class="time">${digitalTime}</span>
+						`;
 
 	// Append the LI element to the messages element
 	messagesEl.appendChild(msgEl);
